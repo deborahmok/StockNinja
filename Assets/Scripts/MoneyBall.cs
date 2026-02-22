@@ -94,7 +94,7 @@ public class MoneyBall : MonoBehaviour
         if (!valueText) return;
 
         if (isBankruptcy) valueText.text = "CRASH";
-        else if (isMoneyBag) valueText.text = "BONUS";
+        else if (isMoneyBag) valueText.text = "CASH";
         else valueText.text = (percent >= 0 ? "+" : "") + percent.ToString("0") + "%";
     }
     void Randomize()
