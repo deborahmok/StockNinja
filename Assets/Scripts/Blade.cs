@@ -4,7 +4,7 @@ using UnityEngine;
 [RequireComponent(typeof(EdgeCollider2D))]
 public class Blade : MonoBehaviour
 {
-    public float minMoveDistance = 0.05f;
+    public float minMoveDistance = 0.1f;
 
     LineRenderer lr;
     EdgeCollider2D edge;
@@ -22,8 +22,10 @@ public class Blade : MonoBehaviour
 
     void Update()
     {
+        if (Input.GetMouseButtonDown(0)) Debug.Log("MOUSE DOWN");
         if (Input.GetMouseButtonDown(0))
         {
+            AudioManager.Instance?.PlaySwipe();
             hasLast = false;
             lr.positionCount = 0;
             edge.enabled = true;
@@ -61,13 +63,17 @@ public class Blade : MonoBehaviour
         lr.positionCount = n + 1;
         lr.SetPosition(n, p);
 
-        // Update collider from line points
+        // Update collider from line points (EdgeCollider wants LOCAL space)
         Vector2[] pts = new Vector2[lr.positionCount];
         for (int i = 0; i < pts.Length; i++)
         {
-            Vector3 v = lr.GetPosition(i);
-            pts[i] = new Vector2(v.x, v.y);
+            Vector3 world = lr.GetPosition(i);
+            Vector3 local = transform.InverseTransformPoint(world);
+            pts[i] = new Vector2(local.x, local.y);
         }
         edge.points = pts;
+
+        // Optional: make it easier to hit (Unity 6 has edgeRadius)
+        edge.edgeRadius = 0.05f;
     }
 }

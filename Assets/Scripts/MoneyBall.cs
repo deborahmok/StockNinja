@@ -1,12 +1,13 @@
 using UnityEngine;
 using TMPro;
+using System.Collections;
 
 public class MoneyBall : MonoBehaviour
 {
     public TextMeshProUGUI valueText;
 
     [Header("Value")]
-    public int value = 20;              // can be positive or negative
+    public float percent = 20f;             // can be positive or negative
     public bool isBankruptcy = false;   // special loss
     public bool isMoneyBag = false;     // special bonus
 
@@ -23,6 +24,10 @@ public class MoneyBall : MonoBehaviour
 
     float revealTimer = 0f;
     bool revealed = false;
+    bool sliced = false;
+    
+    //slicing
+    public GameObject sliceVFX; // optional
     
     void Start()
     {
@@ -33,21 +38,80 @@ public class MoneyBall : MonoBehaviour
 
         if (valueText) valueText.text = hiddenText; // hide first
     }
+    void OnTriggerEnter2D(Collider2D other)
+    {
+        if (other.gameObject.layer == LayerMask.NameToLayer("Blade"))
+        {
+            HandleSlice();
+        }
+    }
+    
+    void HandleSlice()
+    {
+        if (sliced) return;
+        sliced = true;
 
+        if (isBankruptcy)
+        {
+            AudioManager.Instance?.PlayBankrupt();
+            GameManager.Instance.GameOver(true);
+        }
+        else if (isMoneyBag)
+        {
+            AudioManager.Instance?.PlayBonus();
+            GameManager.Instance.AddFlatCash(50f);
+        }
+        else
+        {
+            if (percent >= 0) AudioManager.Instance?.PlayGain();
+            else AudioManager.Instance?.PlayLoss();
+
+            GameManager.Instance.ApplyPercent(percent);
+        }
+
+        StartCoroutine(SliceAndDestroy());
+    }
+    IEnumerator SliceAndDestroy()
+    {
+        // optional VFX pop
+        if (sliceVFX) Instantiate(sliceVFX, transform.position, Quaternion.identity);
+
+        float t = 0f;
+        Vector3 start = transform.localScale;
+
+        while (t < 0.08f)
+        {
+            t += Time.deltaTime;
+            float k = 1f - (t / 0.08f);
+            transform.localScale = start * k;
+            yield return null;
+        }
+
+        Destroy(gameObject);
+    }
     public void RefreshLabel()
     {
         if (!valueText) return;
 
-        if (isBankruptcy) valueText.text = "BANKRUPT";
-        else if (isMoneyBag) valueText.text = "💰";
-        else valueText.text = (value >= 0 ? "+" : "") + value.ToString();
+        if (isBankruptcy) valueText.text = "CRASH";
+        else if (isMoneyBag) valueText.text = "BONUS";
+        else valueText.text = (percent >= 0 ? "+" : "") + percent.ToString("0") + "%";
     }
     void Randomize()
     {
         // Pick a value from a discrete set (bucketed outcomes)
-        int[] possibleValues = { -50, -20, -10, 10, 20, 30, 50 };
-        value = possibleValues[Random.Range(0, possibleValues.Length)];
-
+        float[] possiblePercents = { -50f, -20f, -10f, 10f, 20f, 30f, 50f };
+        percent = possiblePercents[Random.Range(0, possiblePercents.Length)];
+        if (isBankruptcy)
+        {
+            spriteRenderer.color = Color.black;
+            valueText.color = Color.white;
+        }
+        else if (isMoneyBag)
+        {
+            spriteRenderer.color = Color.yellow;
+            valueText.color = Color.black;
+        }
         // Randomly choose a color INDEPENDENT of value (misleading on purpose)
         bool makeGreen = Random.value < 0.5f;
 
@@ -59,10 +123,16 @@ public class MoneyBall : MonoBehaviour
         {
             valueText.color = makeGreen ? redColor : greenColor;
         }
-
-        // (for now) no special types
-        isBankruptcy = false;
-        isMoneyBag = false;
+        // Reset to normal size first
+        Vector3 baseScale = transform.localScale;
+        if (isBankruptcy || isMoneyBag)
+        {
+            transform.localScale = baseScale * 1.8f;
+        }
+        else
+        {
+            transform.localScale = baseScale;
+        }
     }
     
     void Update()
