@@ -385,6 +385,56 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 57234400}
   m_CullTransparentMesh: 1
+--- !u!1 &127515228
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 127515230}
+  - component: {fileID: 127515229}
+  m_Layer: 0
+  m_Name: SlashController
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &127515229
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 127515228}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a64d5d28756c04b9d8c972a530fc6eec, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::SlashController
+  slashPrefab: {fileID: 4773674214967570240, guid: cb5cec46af2844fddbe1ad71bce2501b, type: 3}
+  sparksPrefab: {fileID: 3077984811513834444, guid: a81e1bd33340b4e1ebdb00750cfbaf9c, type: 3}
+  minSwipeDistance: 0.5
+  slashDuration: 0.08
+  slashLength: 3
+  slashThickness: 0.1
+--- !u!4 &127515230
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 127515228}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 995.417, y: 272.89774, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &374230288
 GameObject:
   m_ObjectHideFlags: 0
@@ -1106,7 +1156,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!68 &1088594942
 EdgeCollider2D:
   m_ObjectHideFlags: 0
@@ -2256,3 +2306,4 @@ SceneRoots:
   - {fileID: 2054977984928002459}
   - {fileID: 1088594944}
   - {fileID: 955570233}
+  - {fileID: 127515230}

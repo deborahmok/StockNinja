@@ -25,6 +25,7 @@ public class MoneyBall : MonoBehaviour
     float revealTimer = 0f;
     bool revealed = false;
     bool sliced = false;
+    Vector3 originalScale;
     
     //slicing
     public GameObject sliceVFX; // optional
@@ -32,11 +33,37 @@ public class MoneyBall : MonoBehaviour
     void Start()
     {
         Randomize();
-
+        originalScale = transform.localScale;
         revealed = false;
         revealTimer = 0f;
 
         if (valueText) valueText.text = hiddenText; // hide first
+    }
+    IEnumerator PopEffect()
+    {
+        float duration = 0.08f;
+        float t = 0f;
+
+        Vector3 targetScale = originalScale * 1.25f;
+
+        while (t < duration)
+        {
+            t += Time.deltaTime;
+            float k = t / duration;
+            transform.localScale = Vector3.Lerp(originalScale, targetScale, k);
+            yield return null;
+        }
+
+        t = 0f;
+        while (t < duration)
+        {
+            t += Time.deltaTime;
+            float k = t / duration;
+            transform.localScale = Vector3.Lerp(targetScale, originalScale, k);
+            yield return null;
+        }
+
+        transform.localScale = originalScale;
     }
     void OnTriggerEnter2D(Collider2D other)
     {
@@ -50,6 +77,8 @@ public class MoneyBall : MonoBehaviour
     {
         if (sliced) return;
         sliced = true;
+
+        StartCoroutine(PopEffect());
 
         if (isBankruptcy)
         {
